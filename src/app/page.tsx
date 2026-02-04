@@ -3,7 +3,6 @@ import moviesData from '@/data/movies.json'
 import { MovieCard } from '@/components/movie-card'
 import { Movie } from '@/types/movie'
 
-// We force the type here to ensure TypeScript is happy with the JSON import
 const movies = moviesData as Movie[]
 
 export const metadata: Metadata = {
@@ -13,14 +12,14 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100">
+    <main className="min-h-screen">
       {/* Hero Section */}
-      <section className="border-b border-slate-800 bg-slate-900 py-16 text-center shadow-lg">
+      <section className="border-b border-gray-800 bg-white/5 py-16 text-center">
         <div className="container mx-auto px-4">
-          <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-white md:text-6xl">
-            RaftLabs <span className="text-blue-500">Cinema</span>
+          <h1 className="mb-4 text-4xl font-extrabold tracking-tight md:text-6xl">
+            RaftLabs <span className="text-blue-600">Cinema</span>
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-slate-400">
+          <p className="mx-auto max-w-2xl text-lg opacity-70">
             A programmatic directory of the top 250+ highest-rated movies of all time.
             Generated statically from the TMDB dataset.
           </p>
