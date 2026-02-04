@@ -18,42 +18,47 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
   const searchParams = useSearchParams()
   const inputRef = useRef<HTMLInputElement>(null) // Ref to check focus
 
-  // 1. Read Filters from URL
+  // 1. EXTRACT GENRES (New Logic)
+  // Get a unique list of all genres from the dataset
+  const allGenres = useMemo(() => {
+    const genres = new Set<string>()
+    initialMovies.forEach(m => m.genres.forEach(g => genres.add(g)))
+    return Array.from(genres).sort()
+  }, [initialMovies])
+
+  // 2. Read Filters from URL
   const urlSearchQuery = searchParams.get('search') || ''
   const currentPage = Number(searchParams.get('page')) || 1
   const sortBy = searchParams.get('sort') || 'rating_desc'
   const filterRating = searchParams.get('rating') || 'all'
   const filterDecade = searchParams.get('decade') || 'all'
+  const filterGenre = searchParams.get('genre') || 'all' // <--- NEW PARAMETER
 
-  // 2. LOCAL STATE (Initialize with URL value)
+  // 3. LOCAL STATE (Initialize with URL value)
   const [localSearch, setLocalSearch] = useState(urlSearchQuery)
 
-  // 3. SAFE SYNC (The Fix)
-  // Only sync local state with URL if the user is NOT typing (not focused).
-  // This fixes the "text disappearing" bug while keeping Back/Forward navigation working.
+  // 4. SAFE SYNC
   useEffect(() => {
     if (inputRef.current && document.activeElement !== inputRef.current) {
       setLocalSearch(urlSearchQuery)
     }
   }, [urlSearchQuery])
 
-  // 4. DEBOUNCE LOGIC (Performance Fix)
-  // Only update URL 300ms after typing stops
+  // 5. DEBOUNCE LOGIC
   useEffect(() => {
     const handler = setTimeout(() => {
-      // Only update if value actually changed to prevent loops
       if (localSearch !== urlSearchQuery) {
         updateUrl({ search: localSearch })
       }
     }, 300)
 
     return () => clearTimeout(handler)
-  }, [localSearch]) // Trigger when user types
+  }, [localSearch])
 
   // Check if filtered
-  const isFiltered = urlSearchQuery || sortBy !== 'rating_desc' || filterRating !== 'all' || filterDecade !== 'all'
+  const isFiltered = urlSearchQuery || sortBy !== 'rating_desc' || filterRating !== 'all' || filterDecade !== 'all' || filterGenre !== 'all'
 
-  // 5. Update URL Helper
+  // 6. Update URL Helper
   const updateUrl = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString())
     
@@ -62,14 +67,14 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
       else params.set(key, value)
     })
 
-    if (updates.search !== undefined || updates.sort !== undefined || updates.rating !== undefined || updates.decade !== undefined) {
+    if (updates.search !== undefined || updates.sort !== undefined || updates.rating !== undefined || updates.decade !== undefined || updates.genre !== undefined) {
       params.set('page', '1')
     }
 
     router.replace(`?${params.toString()}`, { scroll: false })
   }
 
-  // 6. Pagination Helper
+  // 7. Pagination Helper
   const goToPage = (page: number) => {
     const params = new URLSearchParams(searchParams.toString())
     if (page >= 1 && page <= totalPages) {
@@ -78,17 +83,16 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
     }
   }
 
-  // 7. Reset Helper
+  // 8. Reset Helper
   const resetFilters = () => {
-    setLocalSearch('') // Clear input immediately for UI responsiveness
+    setLocalSearch('') 
     router.replace(pathname, { scroll: false })
   }
 
-  // 8. Filter Logic
+  // 9. Filter Logic
   const filteredMovies = useMemo(() => {
     let result = initialMovies
 
-    // Use urlSearchQuery for filtering (so the grid waits for the debounce)
     if (urlSearchQuery) {
       const q = urlSearchQuery.toLowerCase()
       result = result.filter(m => m.title.toLowerCase().includes(q))
@@ -97,6 +101,11 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
     if (filterRating !== 'all') {
       const minRating = Number(filterRating)
       result = result.filter(m => m.rating >= minRating)
+    }
+
+    // NEW GENRE LOGIC
+    if (filterGenre !== 'all') {
+      result = result.filter(m => m.genres.includes(filterGenre))
     }
 
     if (filterDecade !== 'all') {
@@ -121,7 +130,7 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
         default: return b.rating - a.rating
       }
     })
-  }, [initialMovies, urlSearchQuery, sortBy, filterRating, filterDecade])
+  }, [initialMovies, urlSearchQuery, sortBy, filterRating, filterDecade, filterGenre])
 
   const totalPages = Math.ceil(filteredMovies.length / ITEMS_PER_PAGE)
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
@@ -139,7 +148,7 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
         {/* Search */}
         <div className="relative w-full lg:max-w-xs">
           <input
-            ref={inputRef} // Attach Ref
+            ref={inputRef}
             type="text"
             placeholder="Search movies..."
             value={localSearch}
@@ -155,6 +164,14 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
             <option className={optionClass} value="popularity">Most Popular</option>
             <option className={optionClass} value="year_desc">Newest First</option>
             <option className={optionClass} value="year_asc">Oldest First</option>
+          </select>
+
+          {/* NEW GENRE DROPDOWN */}
+          <select value={filterGenre} onChange={(e) => updateUrl({ genre: e.target.value })} className={selectClass}>
+            <option className={optionClass} value="all">All Genres</option>
+            {allGenres.map(genre => (
+              <option key={genre} className={optionClass} value={genre}>{genre}</option>
+            ))}
           </select>
 
           <select value={filterRating} onChange={(e) => updateUrl({ rating: e.target.value })} className={selectClass}>
@@ -189,7 +206,7 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
 
       {/* GRID */}
       <StaggerContainer 
-        key={`${currentPage}-${sortBy}-${urlSearchQuery}-${filterRating}-${filterDecade}`}
+        key={`${currentPage}-${sortBy}-${urlSearchQuery}-${filterRating}-${filterDecade}-${filterGenre}`}
         className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
       >
         {currentMovies.map((movie) => (

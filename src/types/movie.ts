@@ -1,11 +1,13 @@
 export interface Movie {
-    id: number
-    title: string
-    overview: string
-    release_date: string
-    rating: number
-    vote_count: number
-    poster_path: string | null
-    backdrop_path: string | null
-    genres: string[]
-  }
+  id: number
+  title: string
+  overview: string
+  poster_path: string
+  backdrop_path: string
+  release_date: string
+  vote_average: number // Note: Some datasets use vote_average, some use rating
+  vote_count: number
+  popularity: number // <--- ADD THIS LINE
+  genres: string[]
+  rating: number     // Keep this if your app uses 'rating' instead of 'vote_average'
+}
