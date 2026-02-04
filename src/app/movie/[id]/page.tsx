@@ -35,7 +35,7 @@ export default async function MoviePage({ params }: PageProps) {
         
         {movie.backdrop_path && (
           <Image
-            src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
+            src={`https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`}
             alt={movie.title}
             fill
             className="object-cover opacity-50"

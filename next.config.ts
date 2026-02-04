@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // 1. Move reactCompiler to the top level (Fixes the warning)
+  reactCompiler: true,
+
+  // 2. Keep the image configuration
   images: {
     remotePatterns: [
       {
@@ -9,10 +13,6 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
-  },
-  experimental: {
-    // @ts-expect-error: reactCompiler is valid in Next.js 15+ but types are currently lagging
-    reactCompiler: true,
   },
 };
 
