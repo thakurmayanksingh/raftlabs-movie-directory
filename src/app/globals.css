@@ -1,8 +1,28 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* --- LIGHT MODE (Updated for lower brightness) --- */
+  /* Background: Darker gray (#e4e4e7) to stop the "too bright" feeling */
+  --background: #e4e4e7; 
+  /* Text: Almost black */
+  --foreground: #09090b; 
+  
+  /* Components: Pure white (keeps cards readable against the gray page) */
+  --card-bg: #ffffff;
+  /* Borders: Darker Gray (#a1a1aa) so lines are actually visible */
+  --border-color: #a1a1aa; 
+  /* Inputs: White */
+  --input-bg: #ffffff;
+}
+
+/* --- DARK MODE (Unchanged) --- */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  
+  --card-bg: #171717;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --input-bg: rgba(255, 255, 255, 0.05);
 }
 
 @theme inline {
@@ -12,15 +32,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }

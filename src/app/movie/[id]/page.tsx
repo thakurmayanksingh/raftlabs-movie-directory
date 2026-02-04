@@ -3,10 +3,11 @@ import Image from 'next/image'
 import moviesData from '@/data/movies.json'
 import { Movie } from '@/types/movie'
 import { BackButton } from '@/components/back-button'
+// 1. IMPORT THE COMPONENT
+import { AddToWatchlist } from '@/components/add-to-watchlist'
 
 const movies = moviesData as Movie[]
 
-// Update: In Next.js 16, params is a Promise
 interface PageProps {
   params: Promise<{ id: string }>
 }
@@ -18,7 +19,6 @@ export async function generateStaticParams() {
 }
 
 export default async function MoviePage({ params }: PageProps) {
-  // We must "await" the params before using them
   const { id } = await params
   
   const movie = movies.find((m) => m.id.toString() === id)
@@ -75,6 +75,12 @@ export default async function MoviePage({ params }: PageProps) {
 
           {/* Details (Right) */}
           <div className="space-y-8">
+            
+            {/* 2. PLACED THE WATCHLIST BUTTON HERE */}
+            <div>
+              <AddToWatchlist movie={movie} />
+            </div>
+
             <div>
               <h2 className="mb-3 text-2xl font-semibold opacity-90">Overview</h2>
               <p className="leading-relaxed opacity-70">{movie.overview}</p>
