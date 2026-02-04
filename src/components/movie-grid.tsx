@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { Movie } from '@/types/movie'
 import { MovieCard } from './movie-card'
@@ -16,69 +16,89 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const inputRef = useRef<HTMLInputElement>(null) // Ref to check focus
 
-  // 1. Read State from URL
-  const searchQuery = searchParams.get('search') || ''
+  // 1. Read Filters from URL
+  const urlSearchQuery = searchParams.get('search') || ''
   const currentPage = Number(searchParams.get('page')) || 1
-  
-  // Filters
   const sortBy = searchParams.get('sort') || 'rating_desc'
   const filterRating = searchParams.get('rating') || 'all'
   const filterDecade = searchParams.get('decade') || 'all'
 
-  // Check if any filter is active
-  const isFiltered = searchQuery || sortBy !== 'rating_desc' || filterRating !== 'all' || filterDecade !== 'all'
+  // 2. LOCAL STATE (Initialize with URL value)
+  const [localSearch, setLocalSearch] = useState(urlSearchQuery)
 
-  // 2. Helper to update URL (FILTERS: NO SCROLL)
+  // 3. SAFE SYNC (The Fix)
+  // Only sync local state with URL if the user is NOT typing (not focused).
+  // This fixes the "text disappearing" bug while keeping Back/Forward navigation working.
+  useEffect(() => {
+    if (inputRef.current && document.activeElement !== inputRef.current) {
+      setLocalSearch(urlSearchQuery)
+    }
+  }, [urlSearchQuery])
+
+  // 4. DEBOUNCE LOGIC (Performance Fix)
+  // Only update URL 300ms after typing stops
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      // Only update if value actually changed to prevent loops
+      if (localSearch !== urlSearchQuery) {
+        updateUrl({ search: localSearch })
+      }
+    }, 300)
+
+    return () => clearTimeout(handler)
+  }, [localSearch]) // Trigger when user types
+
+  // Check if filtered
+  const isFiltered = urlSearchQuery || sortBy !== 'rating_desc' || filterRating !== 'all' || filterDecade !== 'all'
+
+  // 5. Update URL Helper
   const updateUrl = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString())
     
     Object.entries(updates).forEach(([key, value]) => {
-      if (value === null || value === 'all') params.delete(key)
+      if (value === null || value === 'all' || value === '') params.delete(key)
       else params.set(key, value)
     })
 
-    // Reset to page 1 if any filter changes
     if (updates.search !== undefined || updates.sort !== undefined || updates.rating !== undefined || updates.decade !== undefined) {
       params.set('page', '1')
     }
 
-    // Scroll: false keeps the user at their current scroll position
     router.replace(`?${params.toString()}`, { scroll: false })
   }
 
-  // 3. Helper for Pagination (PAGE CHANGE: YES SCROLL)
+  // 6. Pagination Helper
   const goToPage = (page: number) => {
     const params = new URLSearchParams(searchParams.toString())
     if (page >= 1 && page <= totalPages) {
       params.set('page', page.toString())
-      // Scroll: true ensures we jump to top for a new page
       router.replace(`?${params.toString()}`, { scroll: true })
     }
   }
 
-  // 4. Reset Function
+  // 7. Reset Helper
   const resetFilters = () => {
+    setLocalSearch('') // Clear input immediately for UI responsiveness
     router.replace(pathname, { scroll: false })
   }
 
-  // 5. Filter & Sort Logic
+  // 8. Filter Logic
   const filteredMovies = useMemo(() => {
     let result = initialMovies
 
-    // A. Text Search
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase()
+    // Use urlSearchQuery for filtering (so the grid waits for the debounce)
+    if (urlSearchQuery) {
+      const q = urlSearchQuery.toLowerCase()
       result = result.filter(m => m.title.toLowerCase().includes(q))
     }
 
-    // B. Rating Filter
     if (filterRating !== 'all') {
       const minRating = Number(filterRating)
       result = result.filter(m => m.rating >= minRating)
     }
 
-    // C. Decade Filter
     if (filterDecade !== 'all') {
       const startYear = Number(filterDecade)
       const endYear = startYear + 9
@@ -88,7 +108,6 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
       })
     }
 
-    // D. Sorting
     return [...result].sort((a, b) => {
       const dateA = new Date(a.release_date).getTime()
       const dateB = new Date(b.release_date).getTime()
@@ -102,14 +121,13 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
         default: return b.rating - a.rating
       }
     })
-  }, [initialMovies, searchQuery, sortBy, filterRating, filterDecade])
+  }, [initialMovies, urlSearchQuery, sortBy, filterRating, filterDecade])
 
-  // 6. Pagination Slices
   const totalPages = Math.ceil(filteredMovies.length / ITEMS_PER_PAGE)
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
   const currentMovies = filteredMovies.slice(startIndex, startIndex + ITEMS_PER_PAGE)
 
-  // --- DYNAMIC STYLES ---
+  // Styles
   const selectClass = "rounded-lg border border-[var(--border-color)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-blue-500 hover:opacity-80 transition-colors cursor-pointer"
   const optionClass = "bg-[var(--card-bg)] text-[var(--foreground)]"
 
@@ -121,18 +139,17 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
         {/* Search */}
         <div className="relative w-full lg:max-w-xs">
           <input
+            ref={inputRef} // Attach Ref
             type="text"
             placeholder="Search movies..."
-            value={searchQuery}
-            onChange={(e) => updateUrl({ search: e.target.value })}
+            value={localSearch}
+            onChange={(e) => setLocalSearch(e.target.value)}
             className="w-full rounded-full border border-[var(--border-color)] bg-[var(--input-bg)] px-4 py-2 text-sm text-[var(--foreground)] placeholder-gray-500 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors"
           />
         </div>
 
-        {/* Dropdowns Group */}
+        {/* Dropdowns */}
         <div className="flex flex-wrap items-center gap-3">
-          
-          {/* SORT BY */}
           <select value={sortBy} onChange={(e) => updateUrl({ sort: e.target.value })} className={selectClass}>
             <option className={optionClass} value="rating_desc">Highest Rated</option>
             <option className={optionClass} value="popularity">Most Popular</option>
@@ -140,7 +157,6 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
             <option className={optionClass} value="year_asc">Oldest First</option>
           </select>
 
-          {/* RATING FILTER */}
           <select value={filterRating} onChange={(e) => updateUrl({ rating: e.target.value })} className={selectClass}>
             <option className={optionClass} value="all">Any Rating</option>
             <option className={optionClass} value="9">9+ Stars</option>
@@ -149,7 +165,6 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
             <option className={optionClass} value="7">7+ Stars</option>
           </select>
 
-          {/* DECADE FILTER */}
           <select value={filterDecade} onChange={(e) => updateUrl({ decade: e.target.value })} className={selectClass}>
             <option className={optionClass} value="all">Any Year</option>
             <option className={optionClass} value="2020">2020s</option>
@@ -160,7 +175,6 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
             <option className={optionClass} value="1970">1970s</option>
           </select>
 
-          {/* RESET BUTTON */}
           {isFiltered && (
             <button
               onClick={resetFilters}
@@ -173,9 +187,9 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
         </div>
       </div>
 
-      {/* GRID (Now Animated!) */}
+      {/* GRID */}
       <StaggerContainer 
-        key={`${currentPage}-${sortBy}-${searchQuery}-${filterRating}-${filterDecade}`}
+        key={`${currentPage}-${sortBy}-${urlSearchQuery}-${filterRating}-${filterDecade}`}
         className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
       >
         {currentMovies.map((movie) => (
@@ -196,7 +210,7 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
         </div>
       )}
 
-      {/* ARROW PAGINATION */}
+      {/* PAGINATION */}
       {totalPages > 1 && (
         <div className="mt-12 flex items-center justify-center gap-8 select-none">
           <button
