@@ -40,7 +40,7 @@ export default function WatchlistPage() {
             Your watchlist is empty
           </h2>
           
-          <p className="mb-8 max-w-md text-[var(--foreground)] opacity-60">
+          <p className="mb-8 max-w-md text-[var(--muted)]">
             It looks like you haven't added any movies yet. Go back to the homepage to find some gems!
           </p>
           
@@ -69,9 +69,9 @@ export default function WatchlistPage() {
 
       {/* GRID (With Stagger Animation) */}
       {/* Key ensures animation replays when page changes */}
-      <StaggerContainer 
-        key={currentPage} 
-        className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+      <StaggerContainer
+        key={currentPage}
+        className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
       >
         {currentMovies.map((movie) => (
           <MovieCard key={movie.id} movie={movie} />
@@ -89,7 +89,7 @@ export default function WatchlistPage() {
             &#8249;
           </button>
           
-          <span className="text-sm text-[var(--foreground)] opacity-70">
+          <span className="text-sm text-[var(--muted)]">
             Page <span className="font-bold">{currentPage}</span> of {totalPages}
           </span>
           

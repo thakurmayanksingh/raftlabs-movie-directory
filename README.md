@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RaftLabs Cinema Assignment
 
-## Getting Started
+A modern, high-performance movie directory built with **Next.js 14**, **Tailwind CSS**, and **Framer Motion**. This project features a programmatically generated "Top 250" collection with advanced filtering, client-side persistence, and staggered animations.
 
-First, run the development server:
+## 🚀 Live Demo
+[**Click here to view the Live Site**](https://raftlabs-cinema-bunny.vercel.app)
+*(Note: Replace this link with your actual Vercel URL after deployment)*
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🌟 Key Features
+* **Deep Linking & Permutations:** "Permutations" are handled via URL parameters. Clicking a genre on a movie page automatically filters the main grid (e.g., `/?genre=Drama`).
+* **Optimized Search:** Implemented **Debounced Search** (300ms) to handle real-time filtering without UI lag or race conditions.
+* **Persistent Watchlist:** Client-side state management using Local Storage to save favorites across sessions.
+* **Visual Polish:** Glassmorphism UI, "Waterfall" entrance animations, and dynamic visual rating bars inspired by Letterboxd.
+* **SEO Ready:** Includes dynamic `sitemap.xml`, `robots.txt`, and OpenGraph metadata for every movie page.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠 Tech Stack
+* **Framework:** Next.js 14 (App Router)
+* **Styling:** Tailwind CSS + Custom Glassmorphism
+* **Language:** TypeScript
+* **Animations:** Framer Motion
+* **Data:** Static JSON (SSG/ISR simulation)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📂 Dataset
+* **Source:** The dataset is a curated JSON list of top-rated movies based on **TMDB (The Movie Database)** metadata.
+* **Generation:** Data was programmatically formatted into a static `movies.json` file to ensure type safety and fast static generation without needing a live backend connection for this demo.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🤖 AI Usage & Prompts
+This project was accelerated using AI-assisted development (Cursor/Gemini) for scaffolding and logic. Key prompts used include:
+1.  *"Create a reusable 'StaggerContainer' component using Framer Motion that creates a waterfall effect for a grid of items."*
+2.  *"Refactor the Movie Grid component to sync filters (genre, year, sort) directly with the URL search parameters for shareability, ensuring the back button works."*
+3.  *"Implement a debounced search input in React that updates the URL query params without causing render loops."*
 
-## Learn More
+## 🔮 What I'd improve with 2 more days
+1.  **Virtualization:** Implement `react-window` for the main grid to handle datasets of 1000+ movies without performance drops.
+2.  **Backend Integration:** Move the Watchlist from Local Storage to a Supabase/PostgreSQL database for cross-device syncing.
+3.  **Unit Testing:** Add Jest/React Testing Library for the filter logic and edge cases.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🏃‍♂️ How to Run Locally
+1.  Clone the repo:
+    ```bash
+    git clone [https://github.com/YOUR_USERNAME/raftlabs-cinema.git](https://github.com/YOUR_USERNAME/raftlabs-cinema.git)
+    ```
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
+3.  Run the development server:
+    ```bash
+    npm run dev
+    ```
+4.  Open [http://localhost:3000](http://localhost:3000)

@@ -1,34 +1,46 @@
-import { MetadataRoute } from 'next'
-import moviesData from '@/data/movies.json'
+import { MetadataRoute } from "next"
+import moviesData from "@/data/movies.json"
+import { COLLECTION_SLUGS } from "@/lib/collections"
 
-// ⚠️ NOTE: Update this URL to your actual Vercel link after you deploy!
-// Example: 'https://raftlabs-cinema-bunny.vercel.app'
-const BASE_URL = 'https://raftlabs-movie-directory.vercel.app'
+const BASE_URL = "https://raftlabs-movie-directory.vercel.app"
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  // 1. Static Routes
-  const routes = [
+  const staticRoutes: MetadataRoute.Sitemap = [
     {
-      url: `${BASE_URL}`,
+      url: BASE_URL,
       lastModified: new Date(),
-      changeFrequency: 'daily' as const,
+      changeFrequency: "daily" as const,
       priority: 1,
     },
     {
-      url: `${BASE_URL}/watchlist`, // Added Watchlist page
+      url: `${BASE_URL}/top-rated`,
       lastModified: new Date(),
-      changeFrequency: 'daily' as const,
+      changeFrequency: "daily" as const,
+      priority: 0.9,
+    },
+    {
+      url: `${BASE_URL}/watchlist`,
+      lastModified: new Date(),
+      changeFrequency: "daily" as const,
       priority: 0.8,
     },
   ]
 
-  // 2. Dynamic Movie Routes (One for every movie in your JSON)
-  const movieRoutes = moviesData.map((movie) => ({
+  const collectionRoutes: MetadataRoute.Sitemap = COLLECTION_SLUGS.map(
+    (slug) => ({
+      url: `${BASE_URL}/collections/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    })
+  )
+
+  const movieRoutes: MetadataRoute.Sitemap = moviesData.map((movie) => ({
     url: `${BASE_URL}/movie/${movie.id}`,
     lastModified: new Date(movie.release_date),
-    changeFrequency: 'monthly' as const,
+    changeFrequency: "monthly" as const,
     priority: 0.5,
   }))
 
-  return [...routes, ...movieRoutes]
+  return [...staticRoutes, ...collectionRoutes, ...movieRoutes]
 }

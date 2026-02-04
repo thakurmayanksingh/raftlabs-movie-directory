@@ -18,7 +18,7 @@ export function AddToWatchlist({ movie }: { movie: Movie }) {
   return (
     <button
       onClick={toggle}
-      className={`flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all duration-300 hover:scale-105 active:scale-95
+      className={`flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-colors active:scale-95
         ${isSaved 
           ? "bg-pink-600 text-white shadow-lg shadow-pink-600/30 ring-2 ring-pink-500 hover:bg-pink-700" 
           : "bg-[var(--card-bg)] text-[var(--foreground)] ring-1 ring-[var(--border-color)] hover:ring-pink-500 hover:text-pink-500"

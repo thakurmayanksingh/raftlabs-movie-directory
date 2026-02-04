@@ -5,9 +5,9 @@ export interface Movie {
   poster_path: string
   backdrop_path: string
   release_date: string
-  vote_average: number // Note: Some datasets use vote_average, some use rating
+  vote_average?: number // Optional: Some datasets use vote_average, some use rating
   vote_count: number
-  popularity: number // <--- ADD THIS LINE
+  popularity?: number
   genres: string[]
-  rating: number     // Keep this if your app uses 'rating' instead of 'vote_average'
+  rating: number
 }

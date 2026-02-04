@@ -1,14 +1,25 @@
-export function MovieSkeleton() {
-    return (
-      <div className="flex flex-col gap-3">
-        {/* Poster Skeleton */}
-        <div className="aspect-[2/3] w-full rounded-xl bg-white/5 animate-pulse ring-1 ring-white/10" />
-        
-        {/* Title & Year Skeleton */}
-        <div className="flex flex-col gap-2 px-1">
-          <div className="h-4 w-3/4 rounded bg-white/5 animate-pulse" />
-          <div className="h-3 w-1/4 rounded bg-white/5 animate-pulse" />
-        </div>
+import { cn } from "@/lib/utils"
+
+export function MovieSkeleton({ className }: { className?: string }) {
+  return (
+    <div className={cn("flex flex-col gap-3", className)}>
+      <div
+        className={cn(
+          "aspect-[2/3] w-full rounded-2xl ring-1 ring-[var(--card-border)] bg-[var(--border-color)]/30"
+        )}
+      />
+      <div className="flex flex-col gap-2 px-1">
+        <div
+          className={cn(
+            "h-5 w-4/5 rounded-lg bg-[var(--border-color)]/40"
+          )}
+        />
+        <div
+          className={cn(
+            "h-3 w-1/3 rounded bg-[var(--border-color)]/30"
+          )}
+        />
       </div>
-    )
-  }
+    </div>
+  )
+}
