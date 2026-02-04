@@ -1,15 +1,37 @@
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
+import type { Metadata } from 'next' // 1. Import Metadata types
 import moviesData from '@/data/movies.json'
 import { Movie } from '@/types/movie'
 import { BackButton } from '@/components/back-button'
-// 1. IMPORT THE COMPONENT
 import { AddToWatchlist } from '@/components/add-to-watchlist'
 
 const movies = moviesData as Movie[]
 
 interface PageProps {
   params: Promise<{ id: string }>
+}
+
+// 2. NEW: GENERATE DYNAMIC METADATA (SEO)
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params
+  const movie = movies.find((m) => m.id.toString() === id)
+
+  if (!movie) {
+    return {
+      title: 'Movie Not Found',
+    }
+  }
+
+  return {
+    title: `${movie.title} | RaftLabs Cinema`,
+    description: movie.overview.slice(0, 160) + '...',
+    openGraph: {
+      title: movie.title,
+      description: movie.overview,
+      images: movie.backdrop_path ? [`https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`] : [],
+    },
+  }
 }
 
 export async function generateStaticParams() {
@@ -76,7 +98,7 @@ export default async function MoviePage({ params }: PageProps) {
           {/* Details (Right) */}
           <div className="space-y-8">
             
-            {/* 2. PLACED THE WATCHLIST BUTTON HERE */}
+            {/* Watchlist Button */}
             <div>
               <AddToWatchlist movie={movie} />
             </div>

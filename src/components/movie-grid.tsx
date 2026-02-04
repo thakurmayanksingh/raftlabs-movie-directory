@@ -4,7 +4,6 @@ import { useMemo } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { Movie } from '@/types/movie'
 import { MovieCard } from './movie-card'
-// 1. IMPORT ANIMATION HELPER
 import { StaggerContainer } from '@/components/ui/fade-in'
 
 interface MovieGridProps {
@@ -30,7 +29,7 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
   // Check if any filter is active
   const isFiltered = searchQuery || sortBy !== 'rating_desc' || filterRating !== 'all' || filterDecade !== 'all'
 
-  // 2. Helper to update URL
+  // 2. Helper to update URL (FILTERS: NO SCROLL)
   const updateUrl = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString())
     
@@ -39,19 +38,31 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
       else params.set(key, value)
     })
 
+    // Reset to page 1 if any filter changes
     if (updates.search !== undefined || updates.sort !== undefined || updates.rating !== undefined || updates.decade !== undefined) {
       params.set('page', '1')
     }
 
-    router.replace(`?${params.toString()}`, { scroll: true })
+    // Scroll: false keeps the user at their current scroll position
+    router.replace(`?${params.toString()}`, { scroll: false })
   }
 
-  // 3. Reset Function
+  // 3. Helper for Pagination (PAGE CHANGE: YES SCROLL)
+  const goToPage = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (page >= 1 && page <= totalPages) {
+      params.set('page', page.toString())
+      // Scroll: true ensures we jump to top for a new page
+      router.replace(`?${params.toString()}`, { scroll: true })
+    }
+  }
+
+  // 4. Reset Function
   const resetFilters = () => {
-    router.replace(pathname, { scroll: true })
+    router.replace(pathname, { scroll: false })
   }
 
-  // 4. Filter & Sort Logic
+  // 5. Filter & Sort Logic
   const filteredMovies = useMemo(() => {
     let result = initialMovies
 
@@ -93,17 +104,12 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
     })
   }, [initialMovies, searchQuery, sortBy, filterRating, filterDecade])
 
-  // 5. Pagination Slices
+  // 6. Pagination Slices
   const totalPages = Math.ceil(filteredMovies.length / ITEMS_PER_PAGE)
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
   const currentMovies = filteredMovies.slice(startIndex, startIndex + ITEMS_PER_PAGE)
 
-  const goToPage = (page: number) => {
-    if (page >= 1 && page <= totalPages) updateUrl({ page: page.toString() })
-  }
-
   // --- DYNAMIC STYLES ---
-  // Using CSS variables so it adapts to Light/Dark mode automatically
   const selectClass = "rounded-lg border border-[var(--border-color)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-blue-500 hover:opacity-80 transition-colors cursor-pointer"
   const optionClass = "bg-[var(--card-bg)] text-[var(--foreground)]"
 
@@ -168,7 +174,6 @@ export function MovieGrid({ initialMovies }: MovieGridProps) {
       </div>
 
       {/* GRID (Now Animated!) */}
-      {/* Key ensures animation replays when page/filters change */}
       <StaggerContainer 
         key={`${currentPage}-${sortBy}-${searchQuery}-${filterRating}-${filterDecade}`}
         className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
