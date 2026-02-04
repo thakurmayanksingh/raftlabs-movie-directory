@@ -3,7 +3,7 @@
 A modern, high-performance movie directory built with **Next.js 14**, **Tailwind CSS**, and **Framer Motion**. This project features a programmatically generated "Top 250" collection with advanced filtering, client-side persistence, and staggered animations.
 
 ## 🚀 Live Demo
-[**Click here to view the Live Site**](https://raftlabs-cinema-bunny.vercel.app)
+[**Click here to view the Live Site**](https://raftlabs-movie-directory.vercel.app/)
 *(Note: Replace this link with your actual Vercel URL after deployment)*
 
 ## 🌟 Key Features
