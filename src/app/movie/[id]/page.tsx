@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
-import Link from 'next/link'
 import moviesData from '@/data/movies.json'
 import { Movie } from '@/types/movie'
+import { BackButton } from '@/components/back-button'
 
 const movies = moviesData as Movie[]
 
@@ -45,9 +45,7 @@ export default async function MoviePage({ params }: PageProps) {
         
         <div className="absolute bottom-0 left-0 z-20 w-full p-6 md:p-12">
           <div className="container mx-auto">
-            <Link href="/" className="mb-4 inline-block text-sm text-blue-500 hover:underline">
-              &larr; Back to Directory
-            </Link>
+            <BackButton/>
             <h1 className="mb-2 text-4xl font-extrabold md:text-6xl text-[var(--foreground)]">{movie.title}</h1>
             <div className="flex flex-wrap gap-3 text-sm font-medium opacity-80">
               <span>{new Date(movie.release_date).getFullYear()}</span>
