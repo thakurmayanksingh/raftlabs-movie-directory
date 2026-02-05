@@ -65,10 +65,10 @@ export default function RootLayout({
                     Hall of Fame
                   </Link>
                   <Link
-                    href="/collections/best-crime"
+                    href="/collections/trending-movies"
                     className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--muted)] transition-colors hover:bg-[var(--border-color)]/50 hover:text-[var(--foreground)]"
                   >
-                    Collections
+                    Trending Movies
                   </Link>
                 </nav>
 
@@ -103,10 +103,10 @@ export default function RootLayout({
                     Hall of Fame
                   </Link>
                   <Link
-                    href="/collections/best-crime"
+                    href="/collections/trending-movies"
                     className="text-[var(--muted)] transition-colors hover:text-[var(--accent)]"
                   >
-                    Collections
+                    Trending Movies
                   </Link>
                   <Link
                     href="/watchlist"

@@ -193,20 +193,13 @@ export function FilterBar({
             className={selectClass}
           >
             <option className={optionClass} value="all">
-              Any Rating
+              Rating
             </option>
-            <option className={optionClass} value="9">
-              9+ Stars
-            </option>
-            <option className={optionClass} value="8.5">
-              8.5+ Stars
-            </option>
-            <option className={optionClass} value="8">
-              8+ Stars
-            </option>
-            <option className={optionClass} value="7">
-              7+ Stars
-            </option>
+            {[10, 9, 8.5, 8, 7, 6, 5, 4, 3, 2, 1].map((r) => (
+              <option key={r} className={optionClass} value={String(r)}>
+                {r}+ Stars
+              </option>
+            ))}
           </select>
 
           <select

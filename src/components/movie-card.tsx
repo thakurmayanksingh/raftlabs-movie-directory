@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Star, Heart } from "lucide-react"
@@ -13,7 +14,7 @@ interface MovieCardProps {
   className?: string
 }
 
-export function MovieCard({ movie, className }: MovieCardProps) {
+function MovieCardComponent({ movie, className }: MovieCardProps) {
   const { addToWatchlist, removeFromWatchlist, isInWatchlist } = useWatchlist()
   const isSaved = isInWatchlist(movie.id)
 
@@ -112,3 +113,5 @@ export function MovieCard({ movie, className }: MovieCardProps) {
     </div>
   )
 }
+
+export const MovieCard = memo(MovieCardComponent)

@@ -55,12 +55,8 @@ export default async function CollectionPage({ params }: PageProps) {
           className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-[var(--muted)] transition-colors hover:text-[var(--accent)]"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Collection
+          Back to Directory
         </Link>
-
-        <div className="mb-4 inline-flex items-center rounded-full border border-blue-500/20 bg-blue-500/5 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-blue-500">
-          Collection
-        </div>
 
         <h1 className="mb-4 max-w-3xl text-4xl font-black tracking-tight text-[var(--foreground)] sm:text-5xl md:text-6xl">
           {config.title}

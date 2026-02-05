@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button"
 import { Trophy } from "lucide-react"
 
 async function getMovies() {
-  await new Promise((resolve) => setTimeout(resolve, 800))
   return moviesData as import("@/types/movie").Movie[]
 }
 

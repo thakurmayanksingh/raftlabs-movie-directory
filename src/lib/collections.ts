@@ -11,6 +11,12 @@ export const COLLECTION_CONFIG: Record<
     color: string
   }
 > = {
+  "trending-movies": {
+    title: "Trending Movies",
+    description: "The most popular and trending films right now",
+    params: { sort: "popularity" },
+    color: "from-rose-500 to-pink-500",
+  },
   "best-crime": {
     title: "Best Crime Movies",
     description: "The highest-rated crime films of all time",

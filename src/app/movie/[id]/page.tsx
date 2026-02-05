@@ -86,26 +86,26 @@ export default async function MoviePage({ params }: PageProps) {
           <div className="absolute inset-0 bg-gradient-to-b from-zinc-900 to-zinc-950" />
         )}
 
-        {/* Gradient overlay for content readability */}
+        {/* Gradient overlay for content readability (theme-aware for light/dark) */}
         <div
-          className="absolute inset-0 bg-gradient-to-t from-[var(--background)] via-[var(--background)]/60 to-transparent"
+          className="absolute inset-0 bg-gradient-to-t from-[var(--background)] via-[var(--background)]/80 to-[var(--background)]/20"
           aria-hidden
         />
 
-        {/* Hero Content */}
+        {/* Hero Content - theme-aware text for visibility in light and dark mode */}
         <div className="absolute bottom-0 left-0 z-20 w-full p-6 md:p-12">
           <div className="container mx-auto max-w-6xl">
             <BackButton />
-            <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-white md:text-6xl lg:text-7xl">
+            <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-[var(--foreground)] md:text-6xl lg:text-7xl">
               {movie.title}
             </h1>
-            <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-zinc-200">
-              <Badge variant="outline" className="border-white/30 bg-black/40 text-white">
+            <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-[var(--muted)]">
+              <Badge variant="outline" className="border-[var(--foreground)]/30 bg-[var(--background)]/90 text-[var(--foreground)]">
                 {new Date(movie.release_date).getFullYear()}
               </Badge>
-              <span className="text-zinc-400">•</span>
-              <span>{movie.genres.join(", ")}</span>
-              <span className="text-zinc-400">•</span>
+              <span className="text-[var(--muted)]">•</span>
+              <span className="text-[var(--foreground)]">{movie.genres.join(", ")}</span>
+              <span className="text-[var(--muted)]">•</span>
               <Badge variant="rating" className="shadow-lg">
                 <Star className="h-4 w-4 fill-current" />
                 {movie.rating.toFixed(1)}
